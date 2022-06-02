@@ -7,8 +7,8 @@ app.use(express.json());
 
 config();
 
-const PORT = process.env.PORT as unknown as number || 3000; 
-const HOST = process.env.HOST || '' ;
+const PORT = process.env.PORT as unknown as number || 3000;
+const HOST = process.env.HOST || '';
 
 app.get('/getAllAnimeData', (req, res) => {
     Collection.then(collection => {
@@ -18,6 +18,20 @@ app.get('/getAllAnimeData', (req, res) => {
             .catch(err => console.log(err));
 
     }).catch(err => console.log(err));
+});
+
+app.get('/getPageData', (req, res) => {
+    var pageNumber: number = req.body.page_number;
+
+    Collection.then(collection => {
+
+        collection.find().limit(pageNumber * 30).toArray()
+            .then(docArray => {
+                var resArray = docArray.slice(docArray.length - 20, docArray.length);
+                res.send(JSON.stringify(resArray));
+            });
+    });
+
 });
 
 app.get('/', (req, res) => res.send('This is the default directory'));
