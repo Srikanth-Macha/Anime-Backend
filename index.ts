@@ -1,7 +1,8 @@
-import express from "express";
+
 import { config } from "dotenv";
 import { Collection } from './database/MongoDB';
 
+var express = require('express');
 var app = express();
 app.use(express.json());
 
