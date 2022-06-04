@@ -9,20 +9,21 @@ app.use(express.json());
 config();
 
 const PORT = process.env.PORT as unknown as number || 3000;
-const HOST = process.env.HOST || '';
+const HOST = process.env.HOST || '0.0.0.0';
 
-app.get('/getAllAnimeData', (req, res) => {
+app.get('/getAllAnimeData', (req: any, res: any) => {
     Collection.then(collection => {
 
-        collection.findOne({ title: 'Naruto' })
-            .then(doc => res.send(doc))
+        collection.find().toArray()
+            .then(animeArray => res.json(animeArray))
             .catch(err => console.log(err));
 
     }).catch(err => console.log(err));
 });
 
-app.get('/getPageData', (req, res) => {
-    var pageNumber: number = req.body.page_number;
+
+app.get('/getPageData', (req: any, res: any) => {
+    var pageNumber: number = req.body.page_number || 1;
 
     Collection.then(collection => {
 
@@ -35,7 +36,22 @@ app.get('/getPageData', (req, res) => {
 
 });
 
-app.get('/', (req, res) => res.send('This is the default directory'));
+app.get('/findAnimeData', (req: any, res: any) => {
+    var animeName: string = req.body.anime_name;
+
+    Collection.then(collection => {
+        collection.find({ title: animeName }, { allowPartialResults: true }).toArray((error, result) => {
+            if (error) throw error;
+
+            res.status(200).json(result);
+        });
+    })
+
+});
+
+
+app.get('/', (req: any, res: any) =>
+    res.send('This is the default directory'));
 
 
 app.listen(PORT, HOST, () => console.log(`Listening at port ${PORT}`));
