@@ -36,7 +36,7 @@ app.get('/getPageData', (req: any, res: any) => {
 
 });
 
-app.get('/findAnimeData', (req: any, res: any) => {
+app.get('/findAnime', (req: any, res: any) => {
     var animeName: string = req.body.anime_name;
 
     Collection.then(collection => {
