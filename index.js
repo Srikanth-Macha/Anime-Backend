@@ -15,22 +15,24 @@ app.get('/getAllAnimeData', function (req, res) {
     })["catch"](function (err) { return console.log(err); });
 });
 app.get('/getPageData', function (req, res) {
-    var pageNumber = req.body.page_number || 1;
+    var pageNumber = req.query.page_number || 1;
+    var pageLimit = 30;
+    console.log(pageNumber);
     MongoDB_1.Collection.then(function (collection) {
-        collection.find().limit(pageNumber * 30).toArray()
+        collection.find().limit(pageNumber * pageLimit).toArray()
             .then(function (docArray) {
-            var resArray = docArray.slice(docArray.length - 20, docArray.length);
+            var resArray = docArray.slice(docArray.length - pageLimit, docArray.length);
             res.send(JSON.stringify(resArray));
         });
     });
 });
-app.get('/findAnimeData', function (req, res) {
-    var animeName = req.body.anime_name;
+app.get('/findAnime', function (req, res) {
+    var animeName = req.query.anime_name;
     MongoDB_1.Collection.then(function (collection) {
-        collection.find({ title: animeName }, { allowPartialResults: true }).toArray(function (error, result) {
+        collection.findOne({ title: animeName }, { allowPartialResults: true }, function (error, result) {
             if (error)
                 throw error;
-            res.status(200).json(result);
+            res.send(result);
         });
     });
 });
