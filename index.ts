@@ -40,7 +40,7 @@ app.get('/getPageData', (req: any, res: any) => {
 });
 
 app.get('/findAnime', (req: any, res: any) => {
-    var animeName: string = "Naruto";
+    var animeName: string = req.query.anime_name;
 
     Collection.then(collection => {
         collection.findOne({ title: animeName }, { allowPartialResults: true }, (error, result)=> {
