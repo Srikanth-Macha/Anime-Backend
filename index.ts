@@ -23,13 +23,16 @@ app.get('/getAllAnimeData', (req: any, res: any) => {
 
 
 app.get('/getPageData', (req: any, res: any) => {
-    var pageNumber: number = req.body.page_number || 1;
+    var pageNumber: number = req.query.page_number || 1;
+    var pageLimit: number = 30;
+
+    console.log(pageNumber);
 
     Collection.then(collection => {
 
-        collection.find().limit(pageNumber * 30).toArray()
+        collection.find().limit(pageNumber * pageLimit).toArray()
             .then(docArray => {
-                var resArray = docArray.slice(docArray.length - 20, docArray.length);
+                var resArray = docArray.slice(docArray.length - pageLimit, docArray.length);
                 res.send(JSON.stringify(resArray));
             });
     });
@@ -37,13 +40,13 @@ app.get('/getPageData', (req: any, res: any) => {
 });
 
 app.get('/findAnime', (req: any, res: any) => {
-    var animeName: string = req.body.anime_name;
+    var animeName: string = "Naruto";
 
     Collection.then(collection => {
-        collection.find({ title: animeName }, { allowPartialResults: true }).toArray((error, result) => {
-            if (error) throw error;
+        collection.findOne({ title: animeName }, { allowPartialResults: true }, (error, result)=> {
+            if(error) throw error;
 
-            res.status(200).json(result);
+            res.send(result);
         });
     })
 
