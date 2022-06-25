@@ -26,13 +26,27 @@ app.get('/getPageData', function (req, res) {
         });
     });
 });
-app.get('/findAnime', function (req, res) {
-    var animeName = req.query.anime_name;
+app.get('/getAnimeByCategory', function (req, res) {
+    var queryCategoryName = req.query.category_name;
+    var category_name = queryCategoryName.toLowerCase();
     MongoDB_1.Collection.then(function (collection) {
-        collection.findOne({ title: animeName }, { allowPartialResults: true }, function (error, result) {
+        collection.find({ tags: category_name }).limit(30)
+            .toArray().then(function (arr) {
+            res.send(arr);
+        })["catch"](function (err) { return console.log(err); });
+    })["catch"](function (err) { return console.log(err); });
+});
+app.get('/findAnime', function (req, res) {
+    var queryAnimeName = req.query.anime_name;
+    var animeName = queryAnimeName;
+    MongoDB_1.Collection.then(function (collection) {
+        collection.findOne({ title: animeName }, {
+            collation: { locale: 'en', caseLevel: false }
+        }, function (error, result) {
             if (error)
                 throw error;
             res.send(result);
+            console.log(result);
         });
     });
 });
