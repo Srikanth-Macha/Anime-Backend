@@ -1,5 +1,6 @@
 
 import { config } from "dotenv";
+import { WithId } from "mongodb";
 import { Collection } from './database/MongoDB';
 
 var express = require('express');
@@ -39,15 +40,41 @@ app.get('/getPageData', (req: any, res: any) => {
 
 });
 
+
+app.get('/getAnimeByCategory', (req: any, res: any) => {
+    var queryCategoryName: string = req.query.category_name;
+    var category_name = queryCategoryName.toLowerCase();
+
+    Collection.then(
+        collection => {
+            collection.find({ tags: category_name }).limit(30)
+                .toArray().then(
+                    arr => {
+                        res.send(arr);
+                    }
+                ).catch(err => console.log(err));
+
+        }
+    ).catch(err => console.log(err));
+
+
+});
+
+
 app.get('/findAnime', (req: any, res: any) => {
-    var animeName: string = req.query.anime_name;
+    var queryAnimeName: string = req.query.anime_name;
+    var animeName = queryAnimeName;
 
     Collection.then(collection => {
-        collection.findOne({ title: animeName }, { allowPartialResults: true }, (error, result)=> {
-            if(error) throw error;
+        collection.findOne({ title: animeName }, {
+            collation: { locale: 'en', caseLevel: false }
+        },
+            (error, result) => {
+                if (error) throw error;
 
-            res.send(result);
-        });
+                res.send(result);
+                console.log(result);
+            });
     })
 
 });
