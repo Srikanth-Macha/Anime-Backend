@@ -1,2 +1,1 @@
-#Ignore environmental files
-Anime-Backend.env
+.env
