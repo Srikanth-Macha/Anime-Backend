@@ -37,16 +37,12 @@ app.get('/getAnimeByCategory', function (req, res) {
     })["catch"](function (err) { return console.log(err); });
 });
 app.get('/findAnime', function (req, res) {
-    var queryAnimeName = req.query.anime_name;
-    var animeName = queryAnimeName;
+    var animeName = req.query.anime_name;
     MongoDB_1.Collection.then(function (collection) {
-        collection.findOne({ title: animeName }, {
-            collation: { locale: 'en', caseLevel: false }
-        }, function (error, result) {
-            if (error)
-                throw error;
-            res.send(result);
-            console.log(result);
+        collection.find({ title: { $regex: new RegExp(animeName) } }).toArray()
+            .then(function (arr) {
+            console.log(arr);
+            res.send(JSON.stringify(arr));
         });
     });
 });
