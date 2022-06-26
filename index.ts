@@ -62,19 +62,14 @@ app.get('/getAnimeByCategory', (req: any, res: any) => {
 
 
 app.get('/findAnime', (req: any, res: any) => {
-    var queryAnimeName: string = req.query.anime_name;
-    var animeName = queryAnimeName;
+    var animeName: string = req.query.anime_name;
 
     Collection.then(collection => {
-        collection.findOne({ title: animeName }, {
-            collation: { locale: 'en', caseLevel: false }
-        },
-            (error, result) => {
-                if (error) throw error;
-
-                res.send(result);
-                console.log(result);
-            });
+        collection.find({ title: { $regex: new RegExp(animeName) } }).toArray()
+        .then(arr => {
+            console.log(arr);
+            res.send(JSON.stringify(arr));
+        });
     })
 
 });
