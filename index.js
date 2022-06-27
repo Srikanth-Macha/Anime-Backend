@@ -6,7 +6,7 @@ var mal_scraper_1 = require("mal-scraper");
 var express = require('express');
 var app = express();
 app.use(express.json());
-var searchAnime = mal_scraper_1["default"].search;
+var searchAnime = mal_scraper_1.search;
 (0, dotenv_1.config)();
 var PORT = process.env.PORT || 3000;
 var HOST = process.env.HOST || '0.0.0.0';
