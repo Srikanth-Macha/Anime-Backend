@@ -1,12 +1,12 @@
 import { config } from "dotenv";
 import { Collection } from './database/MongoDB';
-import malScraper from "mal-scraper";
+import { search } from "mal-scraper";
 
 var express = require('express');
 var app = express();
 app.use(express.json());
 
-var searchAnime = malScraper.search
+var searchAnime = search
 
 config();
 

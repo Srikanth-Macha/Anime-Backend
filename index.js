@@ -2,9 +2,11 @@
 exports.__esModule = true;
 var dotenv_1 = require("dotenv");
 var MongoDB_1 = require("./database/MongoDB");
+var mal_scraper_1 = require("mal-scraper");
 var express = require('express');
 var app = express();
 app.use(express.json());
+var searchAnime = mal_scraper_1["default"].search;
 (0, dotenv_1.config)();
 var PORT = process.env.PORT || 3000;
 var HOST = process.env.HOST || '0.0.0.0';
@@ -23,7 +25,7 @@ app.get('/getPageData', function (req, res) {
             .then(function (docArray) {
             var resArray = docArray.slice(docArray.length - pageLimit, docArray.length);
             res.send(JSON.stringify(resArray));
-        });
+        })["catch"](function (err) { return console.log(err); });
     });
 });
 app.get('/getAnimeByCategory', function (req, res) {
@@ -41,12 +43,18 @@ app.get('/findAnime', function (req, res) {
     MongoDB_1.Collection.then(function (collection) {
         collection.find({ title: { $regex: new RegExp(animeName) } }).toArray()
             .then(function (arr) {
-            console.log(arr);
             res.send(JSON.stringify(arr));
-        });
+        })["catch"](function (err) { return console.log(err); });
     });
 });
 app.get('/', function (req, res) {
     return res.send('This is the default directory');
+});
+app.get('/getFromMalScraper', function (req, res) {
+    var queryName = req.query.anime_name;
+    searchAnime.search("anime", { term: queryName })
+        .then(function (animeArray) {
+        res.send(animeArray);
+    });
 });
 app.listen(PORT, HOST, function () { return console.log("Listening at port ".concat(PORT)); });
