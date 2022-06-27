@@ -1,11 +1,12 @@
-
 import { config } from "dotenv";
-import { WithId } from "mongodb";
 import { Collection } from './database/MongoDB';
+import malScraper from "mal-scraper";
 
 var express = require('express');
 var app = express();
 app.use(express.json());
+
+var searchAnime = malScraper.search
 
 config();
 
@@ -32,10 +33,12 @@ app.get('/getPageData', (req: any, res: any) => {
     Collection.then(collection => {
 
         collection.find().limit(pageNumber * pageLimit).toArray()
-            .then(docArray => {
-                var resArray = docArray.slice(docArray.length - pageLimit, docArray.length);
-                res.send(JSON.stringify(resArray));
-            });
+            .then(
+                docArray => {
+                    var resArray = docArray.slice(docArray.length - pageLimit, docArray.length);
+                    res.send(JSON.stringify(resArray));
+                }
+            ).catch(err => console.log(err));
     });
 
 });
@@ -56,8 +59,6 @@ app.get('/getAnimeByCategory', (req: any, res: any) => {
 
         }
     ).catch(err => console.log(err));
-
-
 });
 
 
@@ -66,17 +67,28 @@ app.get('/findAnime', (req: any, res: any) => {
 
     Collection.then(collection => {
         collection.find({ title: { $regex: new RegExp(animeName) } }).toArray()
-        .then(arr => {
-            console.log(arr);
-            res.send(JSON.stringify(arr));
-        });
-    })
+            .then(
+                arr => {
+                    res.send(JSON.stringify(arr));
+                }
+            ).catch(err => console.log(err));
+    });
 
 });
 
 
 app.get('/', (req: any, res: any) =>
     res.send('This is the default directory'));
+
+
+app.get('/getFromMalScraper', (req: any, res: any) => {
+    var queryName = req.query.anime_name;
+
+    searchAnime.search("anime", { term: queryName })
+        .then(animeArray => {
+            res.send(animeArray);
+        });
+});
 
 
 app.listen(PORT, HOST, () => console.log(`Listening at port ${PORT}`));
