@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { Collection } from './database/MongoDB';
-import { search } from "mal-scraper";
+import { AnimeSearchModel, search } from "mal-scraper";
 
 var express = require('express');
 var app = express();
@@ -85,9 +85,19 @@ app.get('/getFromMalScraper', (req: any, res: any) => {
     var queryName = req.query.anime_name;
 
     searchAnime.search("anime", { term: queryName })
-        .then(animeArray => {
-            res.send(animeArray);
-        });
+        .then(
+            animeArray => {
+                for (let i = 0; i < animeArray.length; i++) {
+                    const anime: AnimeSearchModel = animeArray[i];
+
+                    if (anime.title == queryName) {
+                        res.send(anime);
+                    }
+                }
+
+                // res.send(animeArray);
+            }
+        ).catch(err => console.error(err));
 });
 
 

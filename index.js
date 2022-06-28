@@ -54,7 +54,13 @@ app.get('/getFromMalScraper', function (req, res) {
     var queryName = req.query.anime_name;
     searchAnime.search("anime", { term: queryName })
         .then(function (animeArray) {
-        res.send(animeArray);
-    });
+        for (var i = 0; i < animeArray.length; i++) {
+            var anime = animeArray[i];
+            if (anime.title == queryName) {
+                res.send(anime);
+            }
+        }
+        // res.send(animeArray);
+    })["catch"](function (err) { return console.error(err); });
 });
 app.listen(PORT, HOST, function () { return console.log("Listening at port ".concat(PORT)); });
