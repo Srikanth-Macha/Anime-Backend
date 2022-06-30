@@ -65,8 +65,11 @@ app.get('/getFromMalScraper', function (req, res) {
 });
 app.post("/addToWatchList", function (req, res) {
     MongoDB_1.WatchList.then(function (watchList) {
-        watchList.insertOne(req);
-        res.send(req);
+        watchList.insertOne(req.body).then(function (response) {
+            res.send(req.body);
+            console.log(req.body);
+            console.log(response);
+        })["catch"](function (err) { return console.error(err); });
     })["catch"](function (err) { return console.error(err); });
 });
 app.listen(PORT, HOST, function () { return console.log("Listening at port ".concat(PORT)); });

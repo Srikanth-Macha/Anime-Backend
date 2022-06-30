@@ -1,8 +1,8 @@
 import { config } from "dotenv";
 import { Collection, WatchList } from './database/MongoDB';
 import { AnimeSearchModel, search } from "mal-scraper";
-import express from "express";
 
+var express = require('express')
 var app = express();
 app.use(express.json());
 
@@ -104,12 +104,13 @@ app.get('/getFromMalScraper', (req: any, res: any) => {
 app.post("/addToWatchList", (req: any, res: any) => {
     WatchList.then(
         watchList => {
-            console.log(req.body);
-
-            watchList.insertOne({ title: req.body.title, year: req.body.year }).then(() => {
-                res.send(req.body);
-            });
-             
+            watchList.insertOne(req.body).then(
+                response => {
+                    res.send(req.body);
+                    console.log(req.body);
+                    console.log(response)
+                }
+            ).catch(err => console.error(err));
         }
     ).catch(err => console.error(err));
 });
