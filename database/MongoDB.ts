@@ -5,3 +5,7 @@ const URL = process.env.DATABASE_URL || "mongodb+srv://srikanth:30025020@chattim
 export var Collection = MongoClient.connect(URL).then(value => {
     return value.db('animeDatabase').collection('animes');
 });
+
+export var WatchList = MongoClient.connect(URL).then(value => {
+    return value.db('animeDatabase').collection('animeWatchList');
+});
