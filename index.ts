@@ -94,8 +94,6 @@ app.get('/getFromMalScraper', (req: any, res: any) => {
                         res.send(anime);
                     }
                 }
-
-                // res.send(animeArray);
             }
         ).catch(err => console.error(err));
 });
@@ -113,6 +111,14 @@ app.post("/addToWatchList", (req: any, res: any) => {
             ).catch(err => console.error(err));
         }
     ).catch(err => console.error(err));
+});
+
+
+app.get("/getWatchListData", async(req: any, res: any) => {
+    var watchList = await WatchList;
+    var watchListData = await watchList.find().toArray()
+
+    res.send(watchListData);
 });
 
 app.listen(PORT, HOST, () => console.log(`Listening at port ${PORT}`));
