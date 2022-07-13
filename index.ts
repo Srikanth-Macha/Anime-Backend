@@ -13,34 +13,25 @@ config();
 const PORT = process.env.PORT as unknown as number || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 
-app.get('/getAllAnimeData', (req: any, res: any) => {
-    Collection.then(collection => {
+app.get('/getAllAnimeData', async (req: any, res: any) => {
+    var collection = await Collection;
+    var animeArray = await collection.find().toArray();
 
-        collection.find().toArray()
-            .then(animeArray => res.json(animeArray))
-            .catch(err => console.log(err));
-
-    }).catch(err => console.log(err));
+    res.send(animeArray);
 });
 
 
-app.get('/getPageData', (req: any, res: any) => {
+app.get('/getPageData', async (req: any, res: any) => {
     var pageNumber: number = req.query.page_number || 1;
     var pageLimit: number = 30;
 
     console.log(pageNumber);
 
-    Collection.then(collection => {
+    var collection = await Collection;
+    var animeArray = await collection.find().limit(pageNumber * pageLimit).toArray();
+    var resArray = animeArray.slice(animeArray.length - pageLimit, animeArray.length);
 
-        collection.find().limit(pageNumber * pageLimit).toArray()
-            .then(
-                docArray => {
-                    var resArray = docArray.slice(docArray.length - pageLimit, docArray.length);
-                    res.send(JSON.stringify(resArray));
-                }
-            ).catch(err => console.log(err));
-    });
-
+    res.send(resArray);
 });
 
 
@@ -62,18 +53,13 @@ app.get('/getAnimeByCategory', (req: any, res: any) => {
 });
 
 
-app.get('/findAnime', (req: any, res: any) => {
+app.get('/findAnime', async (req: any, res: any) => {
     var animeName: string = req.query.anime_name;
 
-    Collection.then(collection => {
-        collection.find({ title: { $regex: new RegExp(animeName) } }).toArray()
-            .then(
-                arr => {
-                    res.send(JSON.stringify(arr));
-                }
-            ).catch(err => console.log(err));
-    });
+    var collection = await Collection;
+    var searchResult = await collection.find({ title: { $regex: new RegExp(animeName) } }).toArray();
 
+    res.send(JSON.stringify(searchResult));
 });
 
 
@@ -114,7 +100,7 @@ app.post("/addToWatchList", (req: any, res: any) => {
 });
 
 
-app.get("/getWatchListData", async(req: any, res: any) => {
+app.get("/getWatchListData", async (req: any, res: any) => {
     var watchList = await WatchList;
     var watchListData = await watchList.find().toArray()
 

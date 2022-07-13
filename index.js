@@ -46,24 +46,41 @@ var searchAnime = mal_scraper_1.search;
 (0, dotenv_1.config)();
 var PORT = process.env.PORT || 3000;
 var HOST = process.env.HOST || '0.0.0.0';
-app.get('/getAllAnimeData', function (req, res) {
-    MongoDB_1.Collection.then(function (collection) {
-        collection.find().toArray()
-            .then(function (animeArray) { return res.json(animeArray); })["catch"](function (err) { return console.log(err); });
-    })["catch"](function (err) { return console.log(err); });
-});
-app.get('/getPageData', function (req, res) {
-    var pageNumber = req.query.page_number || 1;
-    var pageLimit = 30;
-    console.log(pageNumber);
-    MongoDB_1.Collection.then(function (collection) {
-        collection.find().limit(pageNumber * pageLimit).toArray()
-            .then(function (docArray) {
-            var resArray = docArray.slice(docArray.length - pageLimit, docArray.length);
-            res.send(JSON.stringify(resArray));
-        })["catch"](function (err) { return console.log(err); });
+app.get('/getAllAnimeData', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var collection, animeArray;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, MongoDB_1.Collection];
+            case 1:
+                collection = _a.sent();
+                return [4 /*yield*/, collection.find().toArray()];
+            case 2:
+                animeArray = _a.sent();
+                res.send(animeArray);
+                return [2 /*return*/];
+        }
     });
-});
+}); });
+app.get('/getPageData', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var pageNumber, pageLimit, collection, animeArray, resArray;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                pageNumber = req.query.page_number || 1;
+                pageLimit = 30;
+                console.log(pageNumber);
+                return [4 /*yield*/, MongoDB_1.Collection];
+            case 1:
+                collection = _a.sent();
+                return [4 /*yield*/, collection.find().limit(pageNumber * pageLimit).toArray()];
+            case 2:
+                animeArray = _a.sent();
+                resArray = animeArray.slice(animeArray.length - pageLimit, animeArray.length);
+                res.send(resArray);
+                return [2 /*return*/];
+        }
+    });
+}); });
 app.get('/getAnimeByCategory', function (req, res) {
     var queryCategoryName = req.query.category_name;
     var category_name = queryCategoryName.toLowerCase();
@@ -74,15 +91,23 @@ app.get('/getAnimeByCategory', function (req, res) {
         })["catch"](function (err) { return console.log(err); });
     })["catch"](function (err) { return console.log(err); });
 });
-app.get('/findAnime', function (req, res) {
-    var animeName = req.query.anime_name;
-    MongoDB_1.Collection.then(function (collection) {
-        collection.find({ title: { $regex: new RegExp(animeName) } }).toArray()
-            .then(function (arr) {
-            res.send(JSON.stringify(arr));
-        })["catch"](function (err) { return console.log(err); });
+app.get('/findAnime', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var animeName, collection, searchResult;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                animeName = req.query.anime_name;
+                return [4 /*yield*/, MongoDB_1.Collection];
+            case 1:
+                collection = _a.sent();
+                return [4 /*yield*/, collection.find({ title: { $regex: new RegExp(animeName) } }).toArray()];
+            case 2:
+                searchResult = _a.sent();
+                res.send(JSON.stringify(searchResult));
+                return [2 /*return*/];
+        }
     });
-});
+}); });
 app.get('/', function (req, res) {
     return res.send('This is the default directory');
 });
