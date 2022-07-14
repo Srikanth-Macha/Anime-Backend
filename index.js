@@ -42,8 +42,8 @@ var mal_scraper_1 = require("mal-scraper");
 var express = require('express');
 var app = express();
 app.use(express.json());
-var searchAnime = mal_scraper_1.search;
-(0, dotenv_1.config)();
+var searchAnime = mal_scraper_1.search; // MalScraper client
+(0, dotenv_1.config)(); // .env configuration
 var PORT = process.env.PORT || 3000;
 var HOST = process.env.HOST || '0.0.0.0';
 app.get('/getAllAnimeData', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -122,27 +122,42 @@ app.get('/findAnime', function (req, res) { return __awaiter(void 0, void 0, voi
 app.get('/', function (req, res) {
     return res.send('This is the default directory');
 });
-app.get('/getFromMalScraper', function (req, res) {
-    var queryName = req.query.anime_name;
-    searchAnime.search("anime", { term: queryName })
-        .then(function (animeArray) {
-        for (var i = 0; i < animeArray.length; i++) {
-            var anime = animeArray[i];
-            if (anime.title == queryName) {
-                res.send(anime);
-            }
+app.get('/getFromMalScraper', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var queryName, animeArray, i, anime;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                queryName = req.query.anime_name;
+                return [4 /*yield*/, searchAnime.search("anime", { term: queryName })];
+            case 1:
+                animeArray = _a.sent();
+                for (i = 0; i < animeArray.length; i++) {
+                    anime = animeArray[i];
+                    if (anime.title == queryName) {
+                        res.send(anime);
+                    }
+                }
+                return [2 /*return*/];
         }
-    })["catch"](function (err) { return console.error(err); });
-});
-app.post("/addToWatchList", function (req, res) {
-    MongoDB_1.WatchList.then(function (watchList) {
-        watchList.insertOne(req.body).then(function (response) {
-            res.send(req.body);
-            console.log(req.body);
-            console.log(response);
-        })["catch"](function (err) { return console.error(err); });
-    })["catch"](function (err) { return console.error(err); });
-});
+    });
+}); });
+app.post("/addToWatchList", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var watchList, insertResponse;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, MongoDB_1.WatchList];
+            case 1:
+                watchList = _a.sent();
+                return [4 /*yield*/, watchList.insertOne(req.body)];
+            case 2:
+                insertResponse = _a.sent();
+                if (insertResponse.acknowledged) {
+                    res.send(req.body);
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
 app.get("/getWatchListData", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var watchList, watchListData;
     return __generator(this, function (_a) {
