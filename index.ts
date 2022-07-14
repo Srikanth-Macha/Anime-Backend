@@ -6,7 +6,7 @@ var express = require('express')
 var app = express();
 app.use(express.json());
 
-var searchAnime = search
+var searchAnime = search;
 
 config();
 
@@ -21,9 +21,10 @@ app.get('/getAllAnimeData', async (req: any, res: any) => {
 });
 
 
+var pageLimit: number = 30;
+
 app.get('/getPageData', async (req: any, res: any) => {
     var pageNumber: number = req.query.page_number || 1;
-    var pageLimit: number = 30;
 
     console.log(pageNumber);
 
@@ -35,21 +36,18 @@ app.get('/getPageData', async (req: any, res: any) => {
 });
 
 
-app.get('/getAnimeByCategory', (req: any, res: any) => {
+app.get('/getAnimeByCategory', async (req: any, res: any) => {
     var queryCategoryName: string = req.query.category_name;
     var category_name = queryCategoryName.toLowerCase();
+    var pageNumber: number = req.query.page_number || 1;
 
-    Collection.then(
-        collection => {
-            collection.find({ tags: category_name }).limit(30)
-                .toArray().then(
-                    arr => {
-                        res.send(arr);
-                    }
-                ).catch(err => console.log(err));
+    console.log(pageNumber);
 
-        }
-    ).catch(err => console.log(err));
+    var collection = await Collection;
+    var animeArray = await collection.find({ tags: category_name }).limit(pageNumber * pageLimit).toArray();
+    var resArray = animeArray.slice(animeArray.length - pageLimit, animeArray.length);
+
+    res.send(resArray);
 });
 
 
@@ -67,21 +65,18 @@ app.get('/', (req: any, res: any) =>
     res.send('This is the default directory'));
 
 
-app.get('/getFromMalScraper', (req: any, res: any) => {
-    var queryName = req.query.anime_name;
+app.get('/getFromMalScraper', async (req: any, res: any) => {
+    var queryName: string = req.query.anime_name;
 
-    searchAnime.search("anime", { term: queryName })
-        .then(
-            animeArray => {
-                for (let i = 0; i < animeArray.length; i++) {
-                    const anime: AnimeSearchModel = animeArray[i];
+    var animeArray: AnimeSearchModel[] = await searchAnime.search("anime", { term: queryName });
+    
+    for (let i = 0; i < animeArray.length; i++) {
+        const anime: AnimeSearchModel = animeArray[i];
 
-                    if (anime.title == queryName) {
-                        res.send(anime);
-                    }
-                }
-            }
-        ).catch(err => console.error(err));
+        if (anime.title == queryName) {
+            res.send(anime);
+        }
+    }
 });
 
 
@@ -92,7 +87,7 @@ app.post("/addToWatchList", (req: any, res: any) => {
                 response => {
                     res.send(req.body);
                     console.log(req.body);
-                    console.log(response)
+                    console.log(response);
                 }
             ).catch(err => console.error(err));
         }

@@ -61,13 +61,13 @@ app.get('/getAllAnimeData', function (req, res) { return __awaiter(void 0, void 
         }
     });
 }); });
+var pageLimit = 30;
 app.get('/getPageData', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var pageNumber, pageLimit, collection, animeArray, resArray;
+    var pageNumber, collection, animeArray, resArray;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 pageNumber = req.query.page_number || 1;
-                pageLimit = 30;
                 console.log(pageNumber);
                 return [4 /*yield*/, MongoDB_1.Collection];
             case 1:
@@ -81,16 +81,27 @@ app.get('/getPageData', function (req, res) { return __awaiter(void 0, void 0, v
         }
     });
 }); });
-app.get('/getAnimeByCategory', function (req, res) {
-    var queryCategoryName = req.query.category_name;
-    var category_name = queryCategoryName.toLowerCase();
-    MongoDB_1.Collection.then(function (collection) {
-        collection.find({ tags: category_name }).limit(30)
-            .toArray().then(function (arr) {
-            res.send(arr);
-        })["catch"](function (err) { return console.log(err); });
-    })["catch"](function (err) { return console.log(err); });
-});
+app.get('/getAnimeByCategory', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var queryCategoryName, category_name, pageNumber, collection, animeArray, resArray;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                queryCategoryName = req.query.category_name;
+                category_name = queryCategoryName.toLowerCase();
+                pageNumber = req.query.page_number || 1;
+                console.log(pageNumber);
+                return [4 /*yield*/, MongoDB_1.Collection];
+            case 1:
+                collection = _a.sent();
+                return [4 /*yield*/, collection.find({ tags: category_name }).limit(pageNumber * pageLimit).toArray()];
+            case 2:
+                animeArray = _a.sent();
+                resArray = animeArray.slice(animeArray.length - pageLimit, animeArray.length);
+                res.send(resArray);
+                return [2 /*return*/];
+        }
+    });
+}); });
 app.get('/findAnime', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var animeName, collection, searchResult;
     return __generator(this, function (_a) {

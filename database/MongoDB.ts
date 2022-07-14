@@ -1,6 +1,9 @@
 import { MongoClient } from "mongodb";
+import { config } from "dotenv";
 
-const URL = process.env.DATABASE_URL || "mongodb+srv://srikanth:30025020@chattimecluster.zp9qs.mongodb.net/?retryWrites=true&w=majority";
+config();
+
+const URL = process.env.DATABASE_URL || "";
 
 export var Collection = MongoClient.connect(URL).then(value => {
     return value.db('animeDatabase').collection('animes');
