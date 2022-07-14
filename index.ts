@@ -6,9 +6,9 @@ var express = require('express')
 var app = express();
 app.use(express.json());
 
-var searchAnime = search;
+var searchAnime = search; // MalScraper client
 
-config();
+config(); // .env configuration
 
 const PORT = process.env.PORT as unknown as number || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -69,7 +69,7 @@ app.get('/getFromMalScraper', async (req: any, res: any) => {
     var queryName: string = req.query.anime_name;
 
     var animeArray: AnimeSearchModel[] = await searchAnime.search("anime", { term: queryName });
-    
+
     for (let i = 0; i < animeArray.length; i++) {
         const anime: AnimeSearchModel = animeArray[i];
 
@@ -80,18 +80,13 @@ app.get('/getFromMalScraper', async (req: any, res: any) => {
 });
 
 
-app.post("/addToWatchList", (req: any, res: any) => {
-    WatchList.then(
-        watchList => {
-            watchList.insertOne(req.body).then(
-                response => {
-                    res.send(req.body);
-                    console.log(req.body);
-                    console.log(response);
-                }
-            ).catch(err => console.error(err));
-        }
-    ).catch(err => console.error(err));
+app.post("/addToWatchList", async (req: any, res: any) => {
+    var watchList = await WatchList;
+    var insertResponse = await watchList.insertOne(req.body);
+
+    if (insertResponse.acknowledged) {
+        res.send(req.body);
+    }
 });
 
 
