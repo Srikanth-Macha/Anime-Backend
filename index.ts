@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { Collection, WatchList } from './database/MongoDB';
+import { AnimeCollection, Users, WatchList } from './database/MongoDB';
 import { AnimeSearchModel, search } from "mal-scraper";
 
 var express = require('express')
@@ -14,7 +14,7 @@ const PORT = process.env.PORT as unknown as number || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 
 app.get('/getAllAnimeData', async (req: any, res: any) => {
-    var collection = await Collection;
+    var collection = await AnimeCollection;
     var animeArray = await collection.find().toArray();
 
     res.send(animeArray);
@@ -28,7 +28,7 @@ app.get('/getPageData', async (req: any, res: any) => {
 
     console.log(pageNumber);
 
-    var collection = await Collection;
+    var collection = await AnimeCollection;
     var animeArray = await collection.find().limit(pageNumber * pageLimit).toArray();
     var resArray = animeArray.slice(animeArray.length - pageLimit, animeArray.length);
 
@@ -43,7 +43,7 @@ app.get('/getAnimeByCategory', async (req: any, res: any) => {
 
     console.log(pageNumber);
 
-    var collection = await Collection;
+    var collection = await AnimeCollection;
     var animeArray = await collection.find({ tags: category_name }).limit(pageNumber * pageLimit).toArray();
     var resArray = animeArray.slice(animeArray.length - pageLimit, animeArray.length);
 
@@ -54,7 +54,7 @@ app.get('/getAnimeByCategory', async (req: any, res: any) => {
 app.get('/findAnime', async (req: any, res: any) => {
     var animeName: string = req.query.anime_name;
 
-    var collection = await Collection;
+    var collection = await AnimeCollection;
     var searchResult = await collection.find({ title: { $regex: new RegExp(animeName) } }).toArray();
 
     res.send(JSON.stringify(searchResult));
@@ -92,9 +92,29 @@ app.post("/addToWatchList", async (req: any, res: any) => {
 
 app.get("/getWatchListData", async (req: any, res: any) => {
     var watchList = await WatchList;
-    var watchListData = await watchList.find().toArray()
+    console.log(req.query.email);
+
+    var watchListData = await watchList.find({ email: req.query.email }).toArray()
 
     res.send(watchListData);
+});
+
+
+app.post("/addUser", async (req: any, res: any) => {
+    var users = await Users;
+    var insertResponse = await users.insertOne(req.body);
+
+    if (insertResponse.acknowledged) {
+        res.send(req.body);
+    }
+});
+
+app.get("/validateUser", async (req: any, res: any) => {
+    var usersCollection = await Users;
+    
+    usersCollection.findOne(req.body, user => {
+        res.send(user);
+    });
 });
 
 app.listen(PORT, HOST, () => console.log(`Listening at port ${PORT}`));

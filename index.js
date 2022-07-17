@@ -50,7 +50,7 @@ app.get('/getAllAnimeData', function (req, res) { return __awaiter(void 0, void 
     var collection, animeArray;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, MongoDB_1.Collection];
+            case 0: return [4 /*yield*/, MongoDB_1.AnimeCollection];
             case 1:
                 collection = _a.sent();
                 return [4 /*yield*/, collection.find().toArray()];
@@ -69,7 +69,7 @@ app.get('/getPageData', function (req, res) { return __awaiter(void 0, void 0, v
             case 0:
                 pageNumber = req.query.page_number || 1;
                 console.log(pageNumber);
-                return [4 /*yield*/, MongoDB_1.Collection];
+                return [4 /*yield*/, MongoDB_1.AnimeCollection];
             case 1:
                 collection = _a.sent();
                 return [4 /*yield*/, collection.find().limit(pageNumber * pageLimit).toArray()];
@@ -90,7 +90,7 @@ app.get('/getAnimeByCategory', function (req, res) { return __awaiter(void 0, vo
                 category_name = queryCategoryName.toLowerCase();
                 pageNumber = req.query.page_number || 1;
                 console.log(pageNumber);
-                return [4 /*yield*/, MongoDB_1.Collection];
+                return [4 /*yield*/, MongoDB_1.AnimeCollection];
             case 1:
                 collection = _a.sent();
                 return [4 /*yield*/, collection.find({ tags: category_name }).limit(pageNumber * pageLimit).toArray()];
@@ -108,7 +108,7 @@ app.get('/findAnime', function (req, res) { return __awaiter(void 0, void 0, voi
         switch (_a.label) {
             case 0:
                 animeName = req.query.anime_name;
-                return [4 /*yield*/, MongoDB_1.Collection];
+                return [4 /*yield*/, MongoDB_1.AnimeCollection];
             case 1:
                 collection = _a.sent();
                 return [4 /*yield*/, collection.find({ title: { $regex: new RegExp(animeName) } }).toArray()];
@@ -165,10 +165,42 @@ app.get("/getWatchListData", function (req, res) { return __awaiter(void 0, void
             case 0: return [4 /*yield*/, MongoDB_1.WatchList];
             case 1:
                 watchList = _a.sent();
-                return [4 /*yield*/, watchList.find().toArray()];
+                console.log(req.query.email);
+                return [4 /*yield*/, watchList.find({ email: req.query.email }).toArray()];
             case 2:
                 watchListData = _a.sent();
                 res.send(watchListData);
+                return [2 /*return*/];
+        }
+    });
+}); });
+app.post("/addUser", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var users, insertResponse;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, MongoDB_1.Users];
+            case 1:
+                users = _a.sent();
+                return [4 /*yield*/, users.insertOne(req.body)];
+            case 2:
+                insertResponse = _a.sent();
+                if (insertResponse.acknowledged) {
+                    res.send(req.body);
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/validateUser", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var usersCollection;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, MongoDB_1.Users];
+            case 1:
+                usersCollection = _a.sent();
+                usersCollection.findOne(req.body, function (user) {
+                    res.send(user);
+                });
                 return [2 /*return*/];
         }
     });
