@@ -24,7 +24,7 @@ app.get('/getAllAnimeData', async (req: any, res: any) => {
 var pageLimit: number = 30;
 
 app.get('/getPageData', async (req: any, res: any) => {
-    var pageNumber: number = req.query.page_number || 1;
+    var pageNumber: number = req.query.page_number || 7;
 
     console.log(pageNumber);
 
@@ -82,9 +82,15 @@ app.get('/getFromMalScraper', async (req: any, res: any) => {
 
 app.post("/addToWatchList", async (req: any, res: any) => {
     var watchList = await WatchList;
-    var insertResponse = await watchList.insertOne(req.body);
+    var insertResponse = null;
 
-    if (insertResponse.acknowledged) {
+    try {
+        insertResponse = await watchList.insertOne(req.body);
+    } catch (err) {
+        console.log(err);
+    }
+
+    if (insertResponse?.acknowledged) {
         res.send(req.body);
     }
 });
@@ -94,7 +100,7 @@ app.get("/getWatchListData", async (req: any, res: any) => {
     var watchList = await WatchList;
     console.log(req.query.email);
 
-    var watchListData = await watchList.find({ email: req.query.email }).toArray()
+    var watchListData = await watchList.find({ email: req.query.email }).sort({ email: 1 }).toArray();
 
     res.send(watchListData);
 });
@@ -102,16 +108,41 @@ app.get("/getWatchListData", async (req: any, res: any) => {
 
 app.post("/addUser", async (req: any, res: any) => {
     var users = await Users;
-    var insertResponse = await users.insertOne(req.body);
+    var insertResponse = null;
 
-    if (insertResponse.acknowledged) {
-        res.send(req.body);
+    try {
+        const usersArray = await users.find({ email: req.body.email }).toArray();
+
+        if (usersArray.length == 0) {
+            insertResponse = await users.insertOne(req.body);
+
+            if (insertResponse.acknowledged) {
+                console.log(req.body);
+                res.send(req.body);
+            }
+        } 
+        else {
+            for (let i = 0; i < usersArray.length; i++) {
+                const doc = usersArray[i];
+
+                if (doc.password == req.body.password) {
+                    console.log(doc);
+                    res.send(doc);
+                }
+            }
+
+            res.send({ });
+        }
+
+    } catch (err) {
+        console.log(err);
     }
 });
 
+
 app.get("/validateUser", async (req: any, res: any) => {
     var usersCollection = await Users;
-    
+
     usersCollection.findOne(req.body, user => {
         res.send(user);
     });
