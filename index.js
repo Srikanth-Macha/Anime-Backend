@@ -67,7 +67,7 @@ app.get('/getPageData', function (req, res) { return __awaiter(void 0, void 0, v
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                pageNumber = req.query.page_number || 1;
+                pageNumber = req.query.page_number || 7;
                 console.log(pageNumber);
                 return [4 /*yield*/, MongoDB_1.AnimeCollection];
             case 1:
@@ -142,16 +142,26 @@ app.get('/getFromMalScraper', function (req, res) { return __awaiter(void 0, voi
     });
 }); });
 app.post("/addToWatchList", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var watchList, insertResponse;
+    var watchList, insertResponse, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, MongoDB_1.WatchList];
             case 1:
                 watchList = _a.sent();
-                return [4 /*yield*/, watchList.insertOne(req.body)];
+                insertResponse = null;
+                _a.label = 2;
             case 2:
+                _a.trys.push([2, 4, , 5]);
+                return [4 /*yield*/, watchList.insertOne(req.body)];
+            case 3:
                 insertResponse = _a.sent();
-                if (insertResponse.acknowledged) {
+                return [3 /*break*/, 5];
+            case 4:
+                err_1 = _a.sent();
+                console.log(err_1);
+                return [3 /*break*/, 5];
+            case 5:
+                if (insertResponse === null || insertResponse === void 0 ? void 0 : insertResponse.acknowledged) {
                     res.send(req.body);
                 }
                 return [2 /*return*/];
@@ -166,7 +176,7 @@ app.get("/getWatchListData", function (req, res) { return __awaiter(void 0, void
             case 1:
                 watchList = _a.sent();
                 console.log(req.query.email);
-                return [4 /*yield*/, watchList.find({ email: req.query.email }).toArray()];
+                return [4 /*yield*/, watchList.find({ email: req.query.email }).sort({ email: 1 }).toArray()];
             case 2:
                 watchListData = _a.sent();
                 res.send(watchListData);
@@ -175,19 +185,44 @@ app.get("/getWatchListData", function (req, res) { return __awaiter(void 0, void
     });
 }); });
 app.post("/addUser", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, insertResponse;
+    var users, insertResponse, usersArray, i, doc, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, MongoDB_1.Users];
             case 1:
                 users = _a.sent();
-                return [4 /*yield*/, users.insertOne(req.body)];
+                insertResponse = null;
+                _a.label = 2;
             case 2:
+                _a.trys.push([2, 7, , 8]);
+                return [4 /*yield*/, users.find({ email: req.body.email }).toArray()];
+            case 3:
+                usersArray = _a.sent();
+                if (!(usersArray.length == 0)) return [3 /*break*/, 5];
+                return [4 /*yield*/, users.insertOne(req.body)];
+            case 4:
                 insertResponse = _a.sent();
                 if (insertResponse.acknowledged) {
+                    console.log(req.body);
                     res.send(req.body);
                 }
-                return [2 /*return*/];
+                return [3 /*break*/, 6];
+            case 5:
+                for (i = 0; i < usersArray.length; i++) {
+                    doc = usersArray[i];
+                    if (doc.password == req.body.password) {
+                        console.log(doc);
+                        res.send(doc);
+                    }
+                }
+                res.send({});
+                _a.label = 6;
+            case 6: return [3 /*break*/, 8];
+            case 7:
+                err_2 = _a.sent();
+                console.log(err_2);
+                return [3 /*break*/, 8];
+            case 8: return [2 /*return*/];
         }
     });
 }); });
