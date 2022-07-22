@@ -55,7 +55,7 @@ app.get('/findAnime', async (req: any, res: any) => {
     var animeName: string = req.query.anime_name;
 
     var collection = await AnimeCollection;
-    var searchResult = await collection.find({ title: { $regex: new RegExp(animeName) } }).toArray();
+    var searchResult = await collection.find({ title: { $regex: new RegExp(animeName, "i") } }).toArray();
 
     res.send(JSON.stringify(searchResult));
 });
@@ -116,11 +116,8 @@ app.post("/addUser", async (req: any, res: any) => {
         if (usersArray.length == 0) {
             insertResponse = await users.insertOne(req.body);
 
-            if (insertResponse.acknowledged) {
-                console.log(req.body);
-                res.send(req.body);
-            }
-        } 
+            res.send(req.body);
+        }
         else {
             for (let i = 0; i < usersArray.length; i++) {
                 const doc = usersArray[i];
@@ -131,7 +128,7 @@ app.post("/addUser", async (req: any, res: any) => {
                 }
             }
 
-            res.send({ });
+            res.send({});
         }
 
     } catch (err) {

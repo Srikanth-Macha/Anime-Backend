@@ -111,7 +111,7 @@ app.get('/findAnime', function (req, res) { return __awaiter(void 0, void 0, voi
                 return [4 /*yield*/, MongoDB_1.AnimeCollection];
             case 1:
                 collection = _a.sent();
-                return [4 /*yield*/, collection.find({ title: { $regex: new RegExp(animeName) } }).toArray()];
+                return [4 /*yield*/, collection.find({ title: { $regex: new RegExp(animeName, "i") } }).toArray()];
             case 2:
                 searchResult = _a.sent();
                 res.send(JSON.stringify(searchResult));
@@ -202,10 +202,7 @@ app.post("/addUser", function (req, res) { return __awaiter(void 0, void 0, void
                 return [4 /*yield*/, users.insertOne(req.body)];
             case 4:
                 insertResponse = _a.sent();
-                if (insertResponse.acknowledged) {
-                    console.log(req.body);
-                    res.send(req.body);
-                }
+                res.send(req.body);
                 return [3 /*break*/, 6];
             case 5:
                 for (i = 0; i < usersArray.length; i++) {
