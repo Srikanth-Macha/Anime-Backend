@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { AnimeCollection, Users, WatchList } from './database/MongoDB';
 import { AnimeSearchModel, search } from "mal-scraper";
+import { hash, compare } from "bcryptjs";
 
 var express = require('express')
 var app = express();
@@ -77,6 +78,10 @@ app.get('/getFromMalScraper', async (req: any, res: any) => {
             res.send(anime);
         }
     }
+
+    if (!res.headersSent) {
+        res.send({});
+    }
 });
 
 
@@ -100,8 +105,9 @@ app.get("/getWatchListData", async (req: any, res: any) => {
     var watchList = await WatchList;
     console.log(req.query.email);
 
-    var watchListData = await watchList.find({ email: req.query.email }).sort({ email: 1 }).toArray();
+    var watchListData = await watchList.find({ "user.email": req.query.email }).sort({ "user.email": 1 }).toArray();
 
+    console.log("from getWatchListData\n" + watchListData);
     res.send(watchListData);
 });
 
@@ -109,11 +115,15 @@ app.get("/getWatchListData", async (req: any, res: any) => {
 app.post("/addUser", async (req: any, res: any) => {
     var users = await Users;
     var insertResponse = null;
+    var salt = req.body.password.length;
+
+    var hashedString: string = await hash(req.body.password, salt);
 
     try {
         const usersArray = await users.find({ email: req.body.email }).toArray();
 
         if (usersArray.length == 0) {
+            req.body.password = hashedString;
             insertResponse = await users.insertOne(req.body);
 
             res.send(req.body);
@@ -121,14 +131,18 @@ app.post("/addUser", async (req: any, res: any) => {
         else {
             for (let i = 0; i < usersArray.length; i++) {
                 const doc = usersArray[i];
+                const check: boolean = await compare(req.body.password, doc.password);
 
-                if (doc.password == req.body.password) {
+                console.log(check);
+
+                if (check) {
                     console.log(doc);
                     res.send(doc);
                 }
             }
 
-            res.send({});
+            if (!res.headersSent)
+                res.send({});
         }
 
     } catch (err) {

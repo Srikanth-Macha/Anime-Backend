@@ -39,6 +39,7 @@ exports.__esModule = true;
 var dotenv_1 = require("dotenv");
 var MongoDB_1 = require("./database/MongoDB");
 var mal_scraper_1 = require("mal-scraper");
+var bcryptjs_1 = require("bcryptjs");
 var express = require('express');
 var app = express();
 app.use(express.json());
@@ -137,6 +138,9 @@ app.get('/getFromMalScraper', function (req, res) { return __awaiter(void 0, voi
                         res.send(anime);
                     }
                 }
+                if (!res.headersSent) {
+                    res.send({});
+                }
                 return [2 /*return*/];
         }
     });
@@ -176,50 +180,68 @@ app.get("/getWatchListData", function (req, res) { return __awaiter(void 0, void
             case 1:
                 watchList = _a.sent();
                 console.log(req.query.email);
-                return [4 /*yield*/, watchList.find({ email: req.query.email }).sort({ email: 1 }).toArray()];
+                return [4 /*yield*/, watchList.find({ "user.email": req.query.email }).sort({ "user.email": 1 }).toArray()];
             case 2:
                 watchListData = _a.sent();
+                console.log("from getWatchListData\n" + watchListData);
                 res.send(watchListData);
                 return [2 /*return*/];
         }
     });
 }); });
 app.post("/addUser", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, insertResponse, usersArray, i, doc, err_2;
+    var users, insertResponse, salt, hashedString, usersArray, i, doc, check, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, MongoDB_1.Users];
             case 1:
                 users = _a.sent();
                 insertResponse = null;
-                _a.label = 2;
+                salt = req.body.password.length;
+                return [4 /*yield*/, (0, bcryptjs_1.hash)(req.body.password, salt)];
             case 2:
-                _a.trys.push([2, 7, , 8]);
-                return [4 /*yield*/, users.find({ email: req.body.email }).toArray()];
+                hashedString = _a.sent();
+                _a.label = 3;
             case 3:
-                usersArray = _a.sent();
-                if (!(usersArray.length == 0)) return [3 /*break*/, 5];
-                return [4 /*yield*/, users.insertOne(req.body)];
+                _a.trys.push([3, 12, , 13]);
+                return [4 /*yield*/, users.find({ email: req.body.email }).toArray()];
             case 4:
+                usersArray = _a.sent();
+                if (!(usersArray.length == 0)) return [3 /*break*/, 6];
+                req.body.password = hashedString;
+                return [4 /*yield*/, users.insertOne(req.body)];
+            case 5:
                 insertResponse = _a.sent();
                 res.send(req.body);
-                return [3 /*break*/, 6];
-            case 5:
-                for (i = 0; i < usersArray.length; i++) {
-                    doc = usersArray[i];
-                    if (doc.password == req.body.password) {
-                        console.log(doc);
-                        res.send(doc);
-                    }
-                }
-                res.send({});
-                _a.label = 6;
-            case 6: return [3 /*break*/, 8];
+                return [3 /*break*/, 11];
+            case 6:
+                i = 0;
+                _a.label = 7;
             case 7:
+                if (!(i < usersArray.length)) return [3 /*break*/, 10];
+                doc = usersArray[i];
+                return [4 /*yield*/, (0, bcryptjs_1.compare)(req.body.password, doc.password)];
+            case 8:
+                check = _a.sent();
+                console.log(check);
+                if (check) {
+                    console.log(doc);
+                    res.send(doc);
+                }
+                _a.label = 9;
+            case 9:
+                i++;
+                return [3 /*break*/, 7];
+            case 10:
+                if (!res.headersSent)
+                    res.send({});
+                _a.label = 11;
+            case 11: return [3 /*break*/, 13];
+            case 12:
                 err_2 = _a.sent();
                 console.log(err_2);
-                return [3 /*break*/, 8];
-            case 8: return [2 /*return*/];
+                return [3 /*break*/, 13];
+            case 13: return [2 /*return*/];
         }
     });
 }); });
