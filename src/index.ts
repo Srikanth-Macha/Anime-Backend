@@ -9,8 +9,8 @@ var express = require('express');
 var app = express();
 app.use(express.json());
 
-
 config(); // .env configuration
+
 
 const PORT = process.env.PORT as unknown as number || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
