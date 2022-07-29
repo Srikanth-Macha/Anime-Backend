@@ -2,11 +2,10 @@
   "name": "anime-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "node build/index.js",
+  "main": "src/index.ts",
   "scripts": {
     "start": "node build/index.js",
-    "tsc": "tsc",
-    "prepare": "npm run tsc"
+    "postinstall": "tsc"
   },
   "keywords": [],
   "author": "",
