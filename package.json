@@ -5,9 +5,7 @@
   "main": "node build/index.js",
   "scripts": {
     "start": "node build/index.js",
-    "postinstall": "tsc",
-    "tsc": "tsc",
-    "prepare": "npm run tsc"
+    "postinstall": "tsc"
   },
   "keywords": [],
   "author": "",
