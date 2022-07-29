@@ -1,2 +1,4 @@
 .env
 .gitignore
+build
+node_modules
