@@ -35,7 +35,7 @@ watchListRouter.post("/addToWatchList", async (req, res) => {
     catch (err) {
         console.log(err);
     }
-    if (insertResponse === null || insertResponse === void 0 ? void 0 : insertResponse.acknowledged) {
+    if (insertResponse?.acknowledged) {
         res.send(req.body);
     }
 });
