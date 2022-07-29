@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "node build/index.js",
-    "preinstall": "tsc"
+    "tsc": "tsc",
+    "prepare": "npm run tsc"
   },
   "keywords": [],
   "author": "",
