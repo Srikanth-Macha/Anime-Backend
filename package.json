@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "node build/index.js",
-    "postinstall": "ts-node src/index.ts"
+    "postinstall": "tsc --watch false"
   },
   "keywords": [],
   "author": "",
