@@ -4,8 +4,8 @@ import { WatchList } from "../database/MongoDB";
 const watchListRouter = express.Router();
 
 watchListRouter.post("/addToWatchList", async (req: any, res: any) => {
-    var watchList = await WatchList;
-    var insertResponse = null;
+    const watchList = await WatchList;
+    let insertResponse = null;
 
     try {
         insertResponse = await watchList.insertOne(req.body);
@@ -20,13 +20,14 @@ watchListRouter.post("/addToWatchList", async (req: any, res: any) => {
 
 
 watchListRouter.get("/getWatchListData", async (req: any, res: any) => {
-    var watchList = await WatchList;
+    const watchList = await WatchList;
     console.log(req.query.email);
 
-    var watchListData =
-        await watchList.find({ "user.email": req.query.email }).sort({ "user.email": 1 }).toArray();
+    const watchListData =
+        await watchList.find({ "email": req.query.email }).sort({ "email": 1 }).toArray();
 
-    console.log("from getWatchListData\n" + watchListData);
+    console.log(watchListData);
+
     res.send(watchListData);
 });
 

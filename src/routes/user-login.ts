@@ -4,10 +4,10 @@ import { Users } from "../database/MongoDB";
 
 const userRouter = express.Router();
 
-userRouter.post("/addUser", async (req: any, res: any) => {
-    var users = await Users;
-    var insertResponse = null;
-    var salt = req.body.password.length;
+userRouter.post("/addUser", async (req: express.Request, res: express.Response) => {
+    const users = await Users;
+    let insertResponse = null;
+    const salt = req.body.password.length;
 
     var hashedString: string = await hash(req.body.password, salt);
 
@@ -17,6 +17,8 @@ userRouter.post("/addUser", async (req: any, res: any) => {
         if (usersArray.length == 0) {
             req.body.password = hashedString;
             insertResponse = await users.insertOne(req.body);
+
+            console.log(insertResponse);
 
             res.send(req.body);
         }
