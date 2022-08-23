@@ -2,7 +2,7 @@ import * as express from "express";
 import { AnimeCollection } from "../database/MongoDB";
 
 const animeRouter = express.Router();
-var pageLimit: number = 30;
+const pageLimit: number = 30;
 
 animeRouter.get('/getPageData', async (req: any, res: any) => {
     const pageNumber: number = req.query.page_number || 7;
@@ -10,10 +10,12 @@ animeRouter.get('/getPageData', async (req: any, res: any) => {
     console.log(pageNumber);
 
     const collection = await AnimeCollection;
-    const animeArray = await collection.find().limit(pageNumber * pageLimit).toArray();
-    const resArray = animeArray.slice(animeArray.length - pageLimit, animeArray.length);
 
-    res.send(resArray);
+    const animeArray = await collection.find()
+        .skip((pageNumber - 1) * pageLimit)
+        .limit(pageLimit).toArray();
+
+    res.send(animeArray);
 });
 
 
