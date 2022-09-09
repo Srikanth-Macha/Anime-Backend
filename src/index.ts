@@ -3,6 +3,7 @@ import watchLisRouter from "./routes/watchlist";
 import animeRouter from "./routes/anime-data";
 import malScraperRouter from "./routes/mal-scraper";
 import userRouter from "./routes/user-login";
+import favouritesRouter from "./routes/favourites";
 
 var express = require('express');
 
@@ -23,16 +24,19 @@ app.get('/', (req: any, res: any) =>
 app.use(animeRouter);
 
 
-// From Mal-Scraper routers
+// From Mal-Scraper router
 app.use(malScraperRouter);
 
 
-// WatchList Routes
+// WatchList Router
 app.use(watchLisRouter);
 
 
 // User Login
 app.use(userRouter);
+
+// Favourites List router
+app.use(favouritesRouter);
 
 
 app.listen(PORT, HOST, () => console.log(`Listening at port ${PORT}`));

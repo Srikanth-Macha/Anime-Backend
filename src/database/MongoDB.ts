@@ -5,14 +5,18 @@ config();
 
 const URL = process.env.DATABASE_URL || "";
 
-export var AnimeCollection = MongoClient.connect(URL).then(value => {
+export const AnimeCollection = MongoClient.connect(URL).then(value => {
     return value.db('animeDatabase').collection('animes');
 });
 
-export var WatchList = MongoClient.connect(URL).then(value => {
+export const WatchList = MongoClient.connect(URL).then(value => {
     return value.db('animeDatabase').collection('animeWatchList');
 });
 
-export var Users = MongoClient.connect(URL).then(value => {
+export const Users = MongoClient.connect(URL).then(value => {
     return value.db("animeDatabase").collection("users");
+});
+
+export const Favourites = MongoClient.connect(URL).then(value => {
+    return value.db("animeDatabase").collection("favourites");
 });

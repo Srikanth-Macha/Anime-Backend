@@ -1,7 +1,7 @@
-import * as express from "express";
+import { Router } from "express";
 import { AnimeCollection } from "../database/MongoDB";
 
-const animeRouter = express.Router();
+const animeRouter = Router();
 const pageLimit: number = 50;
 
 animeRouter.get('/getPageData', async (req: any, res: any) => {
@@ -21,8 +21,7 @@ animeRouter.get('/getPageData', async (req: any, res: any) => {
 
 
 animeRouter.get('/getAnimeByCategory', async (req: any, res: any) => {
-    const queryCategoryName: string = req.query.category_name;
-    const category_name = queryCategoryName.toLowerCase();
+    const category_name: string = req.query.category_name.toLowerCase();
     const pageNumber: number = req.query.page_number || 1;
 
     console.log(pageNumber);
@@ -33,6 +32,7 @@ animeRouter.get('/getAnimeByCategory', async (req: any, res: any) => {
 
     res.send(resArray);
 });
+
 
 animeRouter.get('/findAnime', async (req: any, res: any) => {
     const animeName: string = req.query.anime_name;
