@@ -23,4 +23,19 @@ favouritesRouter.post("/addToFavourites", async (req: Request, res: Response) =>
     res.send(anime);
 });
 
+
+favouritesRouter.delete("/removeFromFavourites", async (req: Request, res: Response) => {
+    const animeName = req.query.anime_name;
+    const userEmail = req.query.email;
+
+    console.log("DELETE");
+
+    const favourites = await Favourites;
+    const deleteResult = await favourites.deleteOne({ title: animeName, email: userEmail });
+
+    console.log(deleteResult);
+    res.send({});
+});
+
+
 export default favouritesRouter; 
