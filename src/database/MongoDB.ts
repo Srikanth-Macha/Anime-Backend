@@ -20,3 +20,8 @@ export const Users = MongoClient.connect(URL).then(value => {
 export const Favourites = MongoClient.connect(URL).then(value => {
     return value.db("animeDatabase").collection("favourites");
 });
+
+
+export const Backup = MongoClient.connect(URL).then(value => {
+    return value.db("animeDatabase").collection("backup");
+});

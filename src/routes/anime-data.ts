@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import { AnimeCollection } from "../database/MongoDB";
 
 const animeRouter = Router();
-const pageLimit: number = 36;
+const pageLimit: number = 30;
 
 animeRouter.get('/getPageData', async (req: any, res: any) => {
     const pageNumber: number = req.query.page_number || 7;
@@ -47,11 +47,11 @@ animeRouter.get('/findAnime', async (req: any, res: any) => {
     res.send(JSON.stringify(searchResult));
 });
 
+
 animeRouter.get('/findAnimeByTag', async (req: Request, res: Response) => {
     const animeTag = req.query.anime_tag;
 
     const collection = await AnimeCollection;
-
     const result = await collection.find({
         tags: {
             $in: [animeTag]
@@ -60,5 +60,22 @@ animeRouter.get('/findAnimeByTag', async (req: Request, res: Response) => {
 
     res.send(result);
 });
+
+
+animeRouter.get('/similarAnime', async (req: Request, res: Response) => {
+    const animeTags = req.query.anime_tags as string[];
+    
+    const collection = await AnimeCollection;
+    const animes = await collection.find({
+        tags: {
+            $in: [animeTags[0], animeTags[1]]
+        }
+    }).limit(25)
+    .toArray();
+    
+    console.log(animes);
+    res.send(animes);
+});
+
 
 export default animeRouter;
