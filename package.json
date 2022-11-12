@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "start": "node build/index.js",
-    "postinstall": "tsc --watch false"
+    "start": "node build/src/index.js",
+    "postinstall": "npx tsc --watch false"
   },
   "keywords": [],
   "author": "",
