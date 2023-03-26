@@ -64,17 +64,26 @@ animeRouter.get('/findAnimeByTag', async (req: Request, res: Response) => {
 
 animeRouter.get('/similarAnime', async (req: Request, res: Response) => {
     const animeTags = req.query.anime_tags as string[];
-    
+
     const collection = await AnimeCollection;
     const animes = await collection.find({
         tags: {
             $in: [animeTags[0], animeTags[1]]
         }
     }).limit(25)
-    .toArray();
-    
+        .toArray();
+
     console.log(animes);
     res.send(animes);
+});
+
+animeRouter.get('/random', async (req, res) => {
+    const collection = await AnimeCollection;
+
+    const value = await collection.aggregate([{ $sample: { size: 1 } }]).toArray();
+    // value.
+    console.log(value[0]);
+    res.send(value[0]);
 });
 
 
